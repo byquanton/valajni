@@ -1,7 +1,3 @@
-errordomain JavaError {
-    EXCEPTION
-}
-
 int32 java_math_abs (JNI.Env env, int32 value) throws JavaError.EXCEPTION{
     unowned JNI.NativeInterface* jni = *((JNI.NativeInterface**) env);
     unowned JNI.Object clazz = jni.find_class (env, "java/lang/Math");
@@ -17,11 +13,11 @@ int32 java_math_abs (JNI.Env env, int32 value) throws JavaError.EXCEPTION{
 
 
 int main () {
-    JNI.JavaVM* vm;
+    var init = JNI.JavaVMInitArgs () { version = JNI.Version.V21 };
+    unowned JNI.JavaVM vm;
     unowned JNI.Env env;
-    var init = JNI.JavaVMInitArgs () { version = JNI.VERSION_21 };
 
-    if (JNI.create_java_vm (out vm, out env, &init) != 0) {
+    if (JNI.create_java_vm (out vm, out env, &init) != JNI.Result.OK) {
         printerr ("could not start the JVM\n");
         return 1;
     }

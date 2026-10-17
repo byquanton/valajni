@@ -1,0 +1,3 @@
+errordomain JavaError {
+    EXCEPTION
+}
