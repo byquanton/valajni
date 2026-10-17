@@ -1,0 +1,1 @@
+option('jdk', type: 'string', value: '/usr/lib/jvm/java-25-openjdk/')
