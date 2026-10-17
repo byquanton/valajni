@@ -76,6 +76,8 @@ namespace JNI {
         public CallObjectMethodAFunc call_object_method_a;
         [CCode (cname = "CallIntMethodA")]
         public CallIntMethodAFunc call_int_method_a;
+        [CCode (cname = "CallVoidMethodA")]
+        public CallVoidMethodAFunc call_void_method_a;
         [CCode (cname = "CallStaticObjectMethodA")]
         public CallStaticObjectMethodAFunc call_static_object_method_a;
         [CCode (cname = "CallStaticIntMethodA")]
@@ -109,6 +111,9 @@ namespace JNI {
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallIntMethodA)")]
     public delegate int32 CallIntMethodAFunc (Env env, Object obj, MethodID m, [CCode (array_length = false)] Value[] args);
+
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallVoidMethodA)")]
+    public delegate void CallVoidMethodAFunc (Env env, Object obj, MethodID m, [CCode (array_length = false)] Value[] args);
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallStaticObjectMethodA)")]
     public delegate unowned Object? CallStaticObjectMethodAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);

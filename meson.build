@@ -27,3 +27,10 @@ executable('getprop',
            build_rpath: jvm_dir,
            install: true,
 )
+
+executable('swing',
+           'src/swing.vala', 'src/jni/jni.vapi', 'src/error.vala',
+           dependencies: [gio_dep, jni_dep, libjvm],
+           build_rpath: jvm_dir,
+           install: true,
+)
