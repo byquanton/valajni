@@ -66,9 +66,16 @@ namespace JNI {
         [CCode (cname = "FindClass")]
         public FindClassFunc find_class;
 
+        [CCode (cname = "GetMethodID")]
+        public GetMethodIDFunc get_method_id;
+
         [CCode (cname = "GetStaticMethodID")]
         public GetStaticMethodIDFunc get_static_method_id;
 
+        [CCode (cname = "CallObjectMethodA")]
+        public CallObjectMethodAFunc call_object_method_a;
+        [CCode (cname = "CallIntMethodA")]
+        public CallIntMethodAFunc call_int_method_a;
         [CCode (cname = "CallStaticObjectMethodA")]
         public CallStaticObjectMethodAFunc call_static_object_method_a;
         [CCode (cname = "CallStaticIntMethodA")]
@@ -81,6 +88,9 @@ namespace JNI {
         [CCode (cname = "ReleaseStringUTFChars")]
         public ReleaseStringUTFCharsFunc release_string_utf_chars;
 
+        [CCode (cname = "NewObjectA")]
+        public NewObjectAFunc new_object_a;
+
         [CCode (cname = "ExceptionCheck")]
         public ExceptionCheckFunc exception_check;
     }
@@ -88,10 +98,17 @@ namespace JNI {
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->FindClass)")]
     public delegate unowned Object? FindClassFunc (Env env, string name);
 
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->GetMethodID)")]
+    public delegate unowned MethodID? GetMethodIDFunc (Env env, Object clazz, string name, string sig);
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->GetStaticMethodID)")]
     public delegate unowned MethodID? GetStaticMethodIDFunc (Env env, Object clazz, string name, string sig);
 
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallObjectMethodA)")]
+    public delegate unowned Object? CallObjectMethodAFunc (Env env, Object obj, MethodID m, [CCode (array_length = false)] Value[] args);
+
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallIntMethodA)")]
+    public delegate int32 CallIntMethodAFunc (Env env, Object obj, MethodID m, [CCode (array_length = false)] Value[] args);
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallStaticObjectMethodA)")]
     public delegate unowned Object? CallStaticObjectMethodAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);
@@ -109,6 +126,8 @@ namespace JNI {
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->ReleaseStringUTFChars)")]
     public delegate void ReleaseStringUTFCharsFunc (Env env, Object str, string chars);
 
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->NewObjectA)")]
+    public delegate unowned Object? NewObjectAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->ExceptionCheck)")]
     public delegate uint8 ExceptionCheckFunc (Env env);
