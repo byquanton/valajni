@@ -1,36 +1,22 @@
-project('valajni', 'c', 'vala',
-  version: '0.1.0',
-)
+project('valajni', 'c', 'vala', 'java', version : '0.1.0')
 
-jdk = get_option('jdk')
-jvm_dir = jdk / 'lib' / 'server'
+javac = meson.get_compiler('java')
+if not javac.version().version_compare('>= 21')
+    error('JDK 21 or newer is required, found javac ' + javac.version())
+endif
 
-jni_dep = declare_dependency(compile_args: [
-                               '-I' + jdk / 'include',
-                               '-I' + jdk / 'include' / 'linux',
-                             ])
-
-libjvm = meson.get_compiler('c').find_library('jvm', dirs: jvm_dir)
-
+jni_dep = dependency('jni', modules: ['jvm'], version: '>= 21')
 gio_dep = dependency('gio-2.0')
 
-executable('math',
-           'src/math.vala', 'src/jni/jni.vapi', 'src/error.vala',
-           dependencies: [gio_dep, jni_dep, libjvm],
-           build_rpath: jvm_dir,
-           install: true,
+runtime_sources = files(
+    'runtime/callback.vala',
+    'runtime/jni.vapi',
+    'runtime/jni-helpers.vala',
 )
+handler = jar('handler', 'runtime/java/valajni/Handler.java')
 
-executable('getprop',
-           'src/getprop.vala', 'src/jni/jni.vapi', 'src/error.vala',
-           dependencies: [gio_dep, jni_dep, libjvm],
-           build_rpath: jvm_dir,
-           install: true,
-)
+valajni_deps = [gio_dep, jni_dep]
 
-executable('swing',
-           'src/swing.vala', 'src/jni/jni.vapi', 'src/error.vala',
-           dependencies: [gio_dep, jni_dep, libjvm],
-           build_rpath: jvm_dir,
-           install: true,
-)
+math = executable('math','examples/math.vala', runtime_sources, dependencies : valajni_deps)
+getprop = executable('getprop','examples/getprop.vala', runtime_sources, dependencies : valajni_deps)
+swing = executable('swing', 'examples/swing.vala', runtime_sources, dependencies : valajni_deps)

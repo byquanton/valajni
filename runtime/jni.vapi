@@ -28,13 +28,6 @@ namespace JNI {
         public unowned Object? l;
     }
 
-
-    [CCode (cname = "JNI_TRUE")]
-    public const bool TRUE;
-    [CCode (cname = "JNI_FALSE")]
-    public const bool FALSE;
-
-
     [CCode (cname = "jint", cprefix = "JNI_", has_type_id = false)]
     public enum Result {
         OK, // success
@@ -50,8 +43,21 @@ namespace JNI {
     public struct JavaVMInitArgs {
         public JNI.Version version;
         public int32 nOptions;
-        public void* options;
+        public JNI.VMOption* options;
         public uint8 ignoreUnrecognized;
+    }
+
+    [CCode (cname = "JNINativeMethod", has_type_id = false, destroy_function = "")]
+    public struct NativeMethod {
+        public unowned string name;
+        public unowned string signature;
+        public void* fnPtr;
+    }
+
+    [CCode (cname = "JavaVMOption", has_type_id = false, destroy_function = "")]
+    public struct VMOption {
+        public unowned string optionString;
+        public void* extraInfo;
     }
 
     [CCode (cname = "JNI_CreateJavaVM")]
@@ -63,38 +69,29 @@ namespace JNI {
 
     [CCode (cname = "struct JNINativeInterface_", has_type_id = false, destroy_function = "")]
     public struct NativeInterface {
-        [CCode (cname = "FindClass")]
-        public FindClassFunc find_class;
+        [CCode (cname = "FindClass")] public FindClassFunc find_class;
 
-        [CCode (cname = "GetMethodID")]
-        public GetMethodIDFunc get_method_id;
+        [CCode (cname = "GetMethodID")] public GetMethodIDFunc get_method_id;
+        [CCode (cname = "GetStaticMethodID")] public GetStaticMethodIDFunc get_static_method_id;
 
-        [CCode (cname = "GetStaticMethodID")]
-        public GetStaticMethodIDFunc get_static_method_id;
+        [CCode (cname = "CallObjectMethodA")] public CallObjectMethodAFunc call_object_method_a;
+        [CCode (cname = "CallIntMethodA")] public CallIntMethodAFunc call_int_method_a;
+        [CCode (cname = "CallVoidMethodA")] public CallVoidMethodAFunc call_void_method_a;
+        [CCode (cname = "CallStaticObjectMethodA")] public CallStaticObjectMethodAFunc call_static_object_method_a;
+        [CCode (cname = "CallStaticIntMethodA")] public CallStaticIntMethodAFunc call_static_int_method_a;
+        [CCode (cname = "CallStaticVoidMethodA")] public CallStaticVoidMethodAFunc call_static_void_method_a;
 
-        [CCode (cname = "CallObjectMethodA")]
-        public CallObjectMethodAFunc call_object_method_a;
-        [CCode (cname = "CallIntMethodA")]
-        public CallIntMethodAFunc call_int_method_a;
-        [CCode (cname = "CallVoidMethodA")]
-        public CallVoidMethodAFunc call_void_method_a;
-        [CCode (cname = "CallStaticObjectMethodA")]
-        public CallStaticObjectMethodAFunc call_static_object_method_a;
-        [CCode (cname = "CallStaticIntMethodA")]
-        public CallStaticIntMethodAFunc call_static_int_method_a;
+        [CCode (cname = "NewStringUTF")] public NewStringUTFFunc new_string_utf;
+        [CCode (cname = "GetStringUTFChars")] public GetStringUTFCharsFunc get_string_utf_chars;
+        [CCode (cname = "ReleaseStringUTFChars")] public ReleaseStringUTFCharsFunc release_string_utf_chars;
 
-        [CCode (cname = "NewStringUTF")]
-        public NewStringUTFFunc new_string_utf;
-        [CCode (cname = "GetStringUTFChars")]
-        public GetStringUTFCharsFunc get_string_utf_chars;
-        [CCode (cname = "ReleaseStringUTFChars")]
-        public ReleaseStringUTFCharsFunc release_string_utf_chars;
+        [CCode (cname = "NewObjectA")] public NewObjectAFunc new_object_a;
 
-        [CCode (cname = "NewObjectA")]
-        public NewObjectAFunc new_object_a;
+        [CCode (cname = "RegisterNatives")] public RegisterNativesFunc register_natives;
+        [CCode (cname = "DeleteLocalRef")] public DeleteLocalRefFunc delete_local_ref;
 
-        [CCode (cname = "ExceptionCheck")]
-        public ExceptionCheckFunc exception_check;
+        [CCode (cname = "ExceptionCheck")] public ExceptionCheckFunc exception_check;
+        [CCode (cname = "ExceptionDescribe")] public ExceptionDescribeFunc exception_describe;
     }
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->FindClass)")]
@@ -121,6 +118,9 @@ namespace JNI {
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallStaticIntMethodA)")]
     public delegate int32 CallStaticIntMethodAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);
 
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->CallStaticVoidMethodA)")]
+    public delegate void CallStaticVoidMethodAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);
+
 
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->NewStringUTF)")]
     public delegate unowned Object? NewStringUTFFunc (Env env, string str);
@@ -134,8 +134,18 @@ namespace JNI {
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->NewObjectA)")]
     public delegate unowned Object? NewObjectAFunc (Env env, Object clazz, MethodID m, [CCode (array_length = false)] Value[] args);
 
+
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->RegisterNatives)")]
+    public delegate int32 RegisterNativesFunc (Env env, Object clazz, [CCode (array_length = false)] NativeMethod[] methods, int32 n);
+
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->DeleteLocalRef)")]
+    public delegate void DeleteLocalRefFunc (Env env, Object obj);
+
     [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->ExceptionCheck)")]
     public delegate uint8 ExceptionCheckFunc (Env env);
+
+    [CCode (has_target = false, cname = "__typeof__ (((struct JNINativeInterface_ *) 0)->ExceptionDescribe)")]
+    public delegate void ExceptionDescribeFunc (Env env);
 
 
     [CCode (cname = "jint")]
