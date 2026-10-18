@@ -1,14 +1,22 @@
 [CCode (cheader_filename = "jni.h")]
 namespace JNI {
     [Compact]
-    [CCode (cname = "struct _jobject")]
+    [CCode (cname = "struct _jobject", free_function = "")]
     public class Object {}
 
     [Compact]
-    [CCode (cname = "struct _jmethodID")]
+    [CCode (cname = "struct _jmethodID", free_function = "")]
     public class MethodID {}
 
-    [CCode (cname = "jvalue")]
+    [Compact]
+    [CCode (cname = "JavaVM", free_function = "")]
+    public class JavaVM {}
+
+    [Compact]
+    [CCode (cname = "JNIEnv", free_function = "")]
+    public class Env {}
+
+    [CCode (cname = "jvalue", has_type_id = false, destroy_function = "")]
     public struct Value {
         public uint8 z;
         public int8 b;
@@ -27,26 +35,18 @@ namespace JNI {
     public const bool FALSE;
 
 
-    [CCode (cname = "jint")]
+    [CCode (cname = "jint", cprefix = "JNI_", has_type_id = false)]
     public enum Result {
-        [CCode (cname = "JNI_OK")] OK, // success
-        [CCode (cname = "JNI_ERR")] ERR, // unknown error
-        [CCode (cname = "JNI_EDETACHED")] EDETACHED, // thread detached from the VM
-        [CCode (cname = "JNI_EVERSION")] EVERSION, // JNI version error
-        [CCode (cname = "JNI_ENOMEM")] ENOMEM, // not enough memory
-        [CCode (cname = "JNI_EEXIST")] EEXIST, // VM already created
-        [CCode (cname = "JNI_EINVAL")] EINVAL // invalid arguments
+        OK, // success
+        ERR, // unknown error
+        EDETACHED, // thread detached from the VM
+        EVERSION, // JNI version error
+        ENOMEM, // not enough memory
+        EEXIST, // VM already created
+        EINVAL // invalid arguments
     }
 
-    [Compact]
-    [CCode (cname = "JavaVM")]
-    public class JavaVM {}
-
-    [Compact]
-    [CCode (cname = "JNIEnv")]
-    public class Env {}
-
-    [CCode (cname = "JavaVMInitArgs")]
+    [CCode (cname = "JavaVMInitArgs",  has_type_id = false, destroy_function = "")]
     public struct JavaVMInitArgs {
         public JNI.Version version;
         public int32 nOptions;
@@ -61,7 +61,7 @@ namespace JNI {
             JavaVMInitArgs* args
     );
 
-    [CCode (cname = "struct JNINativeInterface_")]
+    [CCode (cname = "struct JNINativeInterface_", has_type_id = false, destroy_function = "")]
     public struct NativeInterface {
         [CCode (cname = "FindClass")]
         public FindClassFunc find_class;
